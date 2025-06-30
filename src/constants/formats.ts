@@ -1,0 +1,187 @@
+import { ConversionFormat } from '../types';
+
+export const CONVERSION_FORMATS: ConversionFormat[] = [
+  // PDF Conversions
+  {
+    id: 'pdf-to-docx',
+    name: 'PDF to DOCX',
+    extension: 'docx',
+    description: 'Convert PDF to Microsoft Word document',
+    category: 'PDF',
+    icon: 'FileText',
+    supportedInputs: ['pdf'],
+  },
+  {
+    id: 'pdf-to-pptx',
+    name: 'PDF to PPTX',
+    extension: 'pptx',
+    description: 'Convert PDF to PowerPoint presentation',
+    category: 'PDF',
+    icon: 'Presentation',
+    supportedInputs: ['pdf'],
+  },
+  {
+    id: 'pdf-to-xlsx',
+    name: 'PDF to XLSX',
+    extension: 'xlsx',
+    description: 'Convert PDF to Excel spreadsheet',
+    category: 'PDF',
+    icon: 'FileSpreadsheet',
+    supportedInputs: ['pdf'],
+  },
+  {
+    id: 'pdf-to-txt',
+    name: 'PDF to TXT',
+    extension: 'txt',
+    description: 'Extract text from PDF',
+    category: 'PDF',
+    icon: 'FileText',
+    supportedInputs: ['pdf'],
+  },
+  {
+    id: 'pdf-to-jpg',
+    name: 'PDF to JPG',
+    extension: 'jpg',
+    description: 'Convert PDF pages to images',
+    category: 'PDF',
+    icon: 'Image',
+    supportedInputs: ['pdf'],
+  },
+  {
+    id: 'pdf-to-html',
+    name: 'PDF to HTML',
+    extension: 'html',
+    description: 'Convert PDF to HTML format',
+    category: 'PDF',
+    icon: 'Code',
+    supportedInputs: ['pdf'],
+  },
+
+  // DOCX Conversions
+  {
+    id: 'docx-to-pdf',
+    name: 'DOCX to PDF',
+    extension: 'pdf',
+    description: 'Convert Word document to PDF',
+    category: 'Word',
+    icon: 'File',
+    supportedInputs: ['docx', 'doc'],
+  },
+  {
+    id: 'docx-to-txt',
+    name: 'DOCX to TXT',
+    extension: 'txt',
+    description: 'Extract text from Word document',
+    category: 'Word',
+    icon: 'FileText',
+    supportedInputs: ['docx', 'doc'],
+  },
+  {
+    id: 'docx-to-html',
+    name: 'DOCX to HTML',
+    extension: 'html',
+    description: 'Convert Word document to HTML',
+    category: 'Word',
+    icon: 'Code',
+    supportedInputs: ['docx', 'doc'],
+  },
+
+  // PPTX Conversions
+  {
+    id: 'pptx-to-pdf',
+    name: 'PPTX to PDF',
+    extension: 'pdf',
+    description: 'Convert PowerPoint to PDF',
+    category: 'PowerPoint',
+    icon: 'File',
+    supportedInputs: ['pptx', 'ppt'],
+  },
+  {
+    id: 'pptx-to-jpg',
+    name: 'PPTX to JPG',
+    extension: 'jpg',
+    description: 'Convert slides to images',
+    category: 'PowerPoint',
+    icon: 'Image',
+    supportedInputs: ['pptx', 'ppt'],
+  },
+
+  // XLSX Conversions
+  {
+    id: 'xlsx-to-pdf',
+    name: 'XLSX to PDF',
+    extension: 'pdf',
+    description: 'Convert Excel to PDF',
+    category: 'Excel',
+    icon: 'File',
+    supportedInputs: ['xlsx', 'xls'],
+  },
+  {
+    id: 'xlsx-to-csv',
+    name: 'XLSX to CSV',
+    extension: 'csv',
+    description: 'Convert Excel to CSV format',
+    category: 'Excel',
+    icon: 'FileSpreadsheet',
+    supportedInputs: ['xlsx', 'xls'],
+  },
+  {
+    id: 'xlsx-to-json',
+    name: 'XLSX to JSON',
+    extension: 'json',
+    description: 'Convert Excel to JSON format',
+    category: 'Excel',
+    icon: 'Code',
+    supportedInputs: ['xlsx', 'xls'],
+  },
+
+  // Text Conversions
+  {
+    id: 'txt-to-pdf',
+    name: 'TXT to PDF',
+    extension: 'pdf',
+    description: 'Convert text file to PDF',
+    category: 'Text',
+    icon: 'File',
+    supportedInputs: ['txt'],
+  },
+  {
+    id: 'md-to-html',
+    name: 'MD to HTML',
+    extension: 'html',
+    description: 'Convert Markdown to HTML',
+    category: 'Text',
+    icon: 'Code',
+    supportedInputs: ['md'],
+  },
+  {
+    id: 'md-to-pdf',
+    name: 'MD to PDF',
+    extension: 'pdf',
+    description: 'Convert Markdown to PDF',
+    category: 'Text',
+    icon: 'File',
+    supportedInputs: ['md'],
+  },
+
+  // Image Conversions
+  {
+    id: 'img-to-pdf',
+    name: 'Image to PDF',
+    extension: 'pdf',
+    description: 'Convert images to PDF',
+    category: 'Image',
+    icon: 'File',
+    supportedInputs: ['jpg', 'jpeg', 'png', 'webp'],
+  },
+];
+
+export const FILE_CATEGORIES = [
+  { id: 'all', name: 'All Formats', icon: 'Files' },
+  { id: 'PDF', name: 'PDF', icon: 'File' },
+  { id: 'Word', name: 'Word', icon: 'FileText' },
+  { id: 'PowerPoint', name: 'PowerPoint', icon: 'Presentation' },
+  { id: 'Excel', name: 'Excel', icon: 'FileSpreadsheet' },
+  { id: 'Text', name: 'Text', icon: 'FileText' },
+  { id: 'Image', name: 'Image', icon: 'Image' },
+];
