@@ -1,9 +1,14 @@
 import { FileInfo } from '../types';
 import { createDownloadUrl } from './fileUtils';
 import * as XLSX from 'xlsx';
-import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import { jsPDF } from 'jspdf';
 import { marked } from 'marked';
+// @ts-ignore
+import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf';
+// @ts-ignore
+import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.mjs?url';
+
+(pdfjsLib as any).GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 // Real conversion service with actual file processing
 export const convertFile = async (
@@ -111,7 +116,7 @@ async function convertFromExcel(
       const pageHeight = doc.internal.pageSize.height;
       let y = 20;
       
-      jsonData.forEach((row, index) => {
+      jsonData.forEach((row) => {
         if (y > pageHeight - 20) {
           doc.addPage();
           y = 20;
@@ -138,50 +143,61 @@ async function convertFromPDF(
   onProgress: (progress: number) => void
 ): Promise<{ content: string | Uint8Array | ArrayBuffer; mimeType: string }> {
   const arrayBuffer = await file.arrayBuffer();
-  const pdfDoc = await PDFDocument.load(arrayBuffer);
-  
+
   onProgress(50);
-  
+
   switch (targetFormat) {
     case 'txt': {
-      // Simple text extraction (basic implementation)
-      const pages = pdfDoc.getPages();
+      // Real text extraction using pdfjs-dist
+      const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+      const pdf = await loadingTask.promise;
       let text = '';
-      
-      for (let i = 0; i < pages.length; i++) {
-        text += `--- Page ${i + 1} ---\n`;
-        text += `[Text extraction from PDF is limited in browser environment]\n`;
-        text += `Page dimensions: ${pages[i].getWidth()} x ${pages[i].getHeight()}\n\n`;
+
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        const pageText = content.items.map((item: any) => item.str).join(' ');
+        text += `--- Page ${i} ---\n${pageText}\n\n`;
       }
-      
+
       return { content: text, mimeType: 'text/plain' };
     }
-    
+
     case 'html': {
-      const pages = pdfDoc.getPages();
-      let html = `<!DOCTYPE html>
+      const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+      const pdf = await loadingTask.promise;
+
+      let htmlBody = '';
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        
+        // Sanitize text for HTML
+        const pageText = content.items.map((item: any) => 
+          item.str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        ).join(' ');
+
+        htmlBody += `<div class="page"><h2>Page ${i}</h2><p>${pageText}</p></div>`;
+        onProgress(50 + Math.round((i / pdf.numPages) * 40));
+      }
+
+      const fullHtml = `<!DOCTYPE html>
 <html>
 <head>
   <title>Converted PDF</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    .page { margin-bottom: 30px; padding: 20px; border: 1px solid #ccc; }
+    body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+    .page { margin-bottom: 30px; padding: 20px; border: 1px solid #ccc; page-break-after: always; }
+    h2 { border-bottom: 1px solid #eee; padding-bottom: 5px; }
   </style>
 </head>
-<body>`;
-      
-      pages.forEach((page, index) => {
-        html += `<div class="page">
-          <h2>Page ${index + 1}</h2>
-          <p>Page dimensions: ${page.getWidth()} x ${page.getHeight()}</p>
-          <p>[PDF content extraction is limited in browser environment]</p>
-        </div>`;
-      });
-      
-      html += '</body></html>';
-      return { content: html, mimeType: 'text/html' };
+<body>
+  ${htmlBody}
+</body>
+</html>`;
+      return { content: fullHtml, mimeType: 'text/html' };
     }
-    
+
     default:
       throw new Error(`Conversion to ${targetFormat} not supported from PDF`);
   }
@@ -304,11 +320,10 @@ async function convertFromMarkdown(
     }
     
     case 'pdf': {
-      const htmlContent = marked(markdown);
       // Create a simple PDF from the markdown
       const doc = new jsPDF();
-      const lines = markdown.split('\n');
       const pageHeight = doc.internal.pageSize.height;
+      const lines = markdown.split('\n');
       let y = 20;
       
       lines.forEach(line => {
