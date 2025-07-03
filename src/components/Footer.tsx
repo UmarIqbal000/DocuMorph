@@ -9,7 +9,7 @@ const Footer: React.FC = () => {
           <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-6 text-sm text-gray-600 dark:text-gray-400">
             <span>© 2025 All rights reserved</span>
             <span className="hidden sm:block">•</span>
-            <span>Created by NinZae</span>
+            <span>A product by NinZae</span>
             <span className="hidden sm:block">•</span>
             <div className="flex items-center space-x-1">
               <span>Made with</span>
