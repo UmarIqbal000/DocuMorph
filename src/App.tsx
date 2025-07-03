@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
+import Footer from './components/Footer';
 import FileUpload from './components/FileUpload';
 import FormatSelector from './components/FormatSelector';
 import ConversionProgress from './components/ConversionProgress';
@@ -154,10 +155,10 @@ function App() {
   }, [files.length]);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors flex flex-col">
       <Header />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {currentStep === 'hero' && (
           <Hero onGetStarted={handleGetStarted} />
         )}
@@ -213,6 +214,8 @@ function App() {
           </div>
         )}
       </main>
+
+      {currentStep === 'hero' && <Footer />}
     </div>
   );
 }
