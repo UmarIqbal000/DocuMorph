@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { CheckCircle, XCircle, Download, RotateCcw } from 'lucide-react';
+import { CheckCircle, XCircle, Download, RotateCcw, AlertCircle } from 'lucide-react';
 import { FileInfo } from '../types';
 import { formatFileSize } from '../utils/fileUtils';
 
@@ -22,8 +22,7 @@ const ConversionProgress: React.FC<ConversionProgressProps> = ({
   const allCompleted = files.length > 0 && completedFiles.length + failedFiles.length === files.length;
 
   useEffect(() => {
-    if (allCompleted && completedFiles.length > 0) {
-      // Show completion notification
+    if (allCompleted && completedFiles.length > 0 && 'Notification' in window && Notification.permission === 'granted') {
       const notification = new Notification('Conversions Complete!', {
         body: `${completedFiles.length} files converted successfully`,
         icon: '/favicon.ico'
@@ -195,9 +194,12 @@ const ConversionProgress: React.FC<ConversionProgressProps> = ({
             {/* Error Message */}
             {file.status === 'failed' && file.error && (
               <div className="mt-3 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
-                <p className="text-sm text-red-700 dark:text-red-300">
-                  {file.error}
-                </p>
+                <div className="flex items-start space-x-2">
+                  <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-sm text-red-700 dark:text-red-300">
+                    {file.error}
+                  </p>
+                </div>
               </div>
             )}
           </div>

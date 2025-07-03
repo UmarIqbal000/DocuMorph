@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
-import { Upload, X, File } from 'lucide-react';
+import { Upload, X, File, AlertCircle } from 'lucide-react';
 import { useFileUpload } from '../hooks/useFileUpload';
-import { formatFileSize, getFileIcon } from '../utils/fileUtils';
+import { formatFileSize, getFileIcon, validateFileForConversion } from '../utils/fileUtils';
 import { FileInfo } from '../types';
 
 interface FileUploadProps {
@@ -16,12 +16,34 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFilesAdded, files, onRemoveFi
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(event.target.files || []);
-    const fileInfos = addFiles(selectedFiles);
-    onFilesAdded(fileInfos);
+    processFiles(selectedFiles);
     
     // Reset input
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
+    }
+  };
+
+  const processFiles = (selectedFiles: File[]) => {
+    const validFiles: File[] = [];
+    const errors: string[] = [];
+
+    selectedFiles.forEach(file => {
+      const validation = validateFileForConversion(file);
+      if (validation.isValid) {
+        validFiles.push(file);
+      } else {
+        errors.push(`${file.name}: ${validation.error}`);
+      }
+    });
+
+    if (errors.length > 0) {
+      alert(`Some files could not be added:\n${errors.join('\n')}`);
+    }
+
+    if (validFiles.length > 0) {
+      const fileInfos = addFiles(validFiles);
+      onFilesAdded(fileInfos);
     }
   };
 
@@ -32,8 +54,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFilesAdded, files, onRemoveFi
   const handleDropWithCallback = (e: React.DragEvent) => {
     handleDrop(e);
     const droppedFiles = Array.from(e.dataTransfer.files);
-    const fileInfos = addFiles(droppedFiles);
-    onFilesAdded(fileInfos);
+    processFiles(droppedFiles);
   };
 
   const IconComponent = ({ iconName }: { iconName: string }) => {
@@ -93,7 +114,8 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFilesAdded, files, onRemoveFi
           </div>
           
           <div className="text-sm text-gray-500 dark:text-gray-400">
-            Supports: PDF, DOCX, PPTX, XLSX, TXT, MD, Images, and more
+            <p>Supports: PDF, DOCX, PPTX, XLSX, TXT, MD, Images, and more</p>
+            <p className="mt-1">Maximum file size: 50MB</p>
           </div>
         </div>
       </div>

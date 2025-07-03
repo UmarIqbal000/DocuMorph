@@ -49,7 +49,39 @@ export const isValidFileType = (file: File, acceptedTypes: string[]): boolean =>
   return acceptedTypes.includes(extension);
 };
 
-export const createDownloadUrl = (content: string | Uint8Array, filename: string, type: string): string => {
-  const blob = new Blob([content], { type });
+export const createDownloadUrl = (
+  content: string | Uint8Array | ArrayBuffer, 
+  filename: string, 
+  type: string
+): string => {
+  let blob: Blob;
+  
+  if (content instanceof ArrayBuffer) {
+    blob = new Blob([content], { type });
+  } else if (content instanceof Uint8Array) {
+    blob = new Blob([content], { type });
+  } else {
+    blob = new Blob([content], { type });
+  }
+  
   return URL.createObjectURL(blob);
+};
+
+export const validateFileForConversion = (file: File): { isValid: boolean; error?: string } => {
+  const maxSize = 50 * 1024 * 1024; // 50MB
+  const supportedTypes = [
+    'pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 
+    'txt', 'md', 'jpg', 'jpeg', 'png', 'webp', 'html', 'csv', 'json'
+  ];
+  
+  if (file.size > maxSize) {
+    return { isValid: false, error: 'File size must be less than 50MB' };
+  }
+  
+  const extension = getFileExtension(file.name);
+  if (!supportedTypes.includes(extension)) {
+    return { isValid: false, error: `File type .${extension} is not supported` };
+  }
+  
+  return { isValid: true };
 };
